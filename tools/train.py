@@ -55,16 +55,22 @@ def parse_args():
 def main():
     args = parse_args()
 
+    print_log('Parsed arguments', logger='current', level=logging.INFO)
+
     # register all modules in mmdet into the registries
     # do not init the default scope here because it will be init in the runner
     register_all_modules_mmdet(init_default_scope=False)
     register_all_modules(init_default_scope=False)
+
+    print_log('Registered all modules', logger='current', level=logging.INFO)
 
     # load config
     cfg = Config.fromfile(args.config)
     cfg.launcher = args.launcher
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    print_log('Loaded config', logger='current', level=logging.INFO)
 
     # work_dir is determined in this priority: CLI > segment in file > filename
     if args.work_dir is not None:
@@ -104,6 +110,8 @@ def main():
 
     cfg.resume = args.resume
 
+    print_log('Resume flag set', logger='current', level=logging.INFO)
+
     # build the runner from config
     if 'runner_type' not in cfg:
         # build the default runner
@@ -113,8 +121,12 @@ def main():
         # if 'runner_type' is set in the cfg
         runner = RUNNERS.build(cfg)
 
+    print_log('Built runner', logger='current', level=logging.INFO)
+
     # start training
     runner.train()
+
+    print_log('Started training', logger='current', level=logging.INFO)
 
 
 if __name__ == '__main__':

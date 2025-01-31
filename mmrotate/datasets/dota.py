@@ -194,3 +194,21 @@ class DOTAv2Dataset(DOTADataset):
                     (147, 116, 116), (0, 0, 255), (220, 20, 60), (119, 11, 32),
                     (0, 0, 142)]
     }
+
+
+@DATASETS.register_module()
+class BrickKilnDataset(DOTADataset):
+    METAINFO = {
+        'classes': 
+        ('CFCBK', 'FCBK', 'Zigzag'),
+        'palette': [(255,0,0), (0,255,0), (0,0,255)]
+    }
+
+    def __init__(self,
+                 img_shape: Tuple[int, int] = (640, 640),
+                 diff_thr: int = 100,
+                 **kwargs) -> None:
+        self.img_shape = img_shape
+        self.diff_thr = diff_thr
+        super().__init__(**kwargs)
+
