@@ -10,17 +10,17 @@ from mmrotate.visualization import RotLocalVisualizer
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 
 # Configuration and checkpoint files
-config_file = 'configs/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_m0.py'
+config_file = 'configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_m0.py'
 checkpoint_file = 'work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_m0/epoch_50.pth'
 image_dir = 'data/m0/val/images'
 inf_img_dir = 'results/m0/val/images'
 inf_ann_dir = 'results/m0/val/annfiles'
-save_images = False
+save_images = True
 save_annotations = True
 standardize_points = False
 img_height = 640
 img_width = 640
-replace_class_with_label = True
+replace_class_with_label = False
 class_mapping = {0: "CFCBK", 1: "FCBK", 2: "Zigzag"}
 
 # Load the configuration file
@@ -81,4 +81,4 @@ def save_inference(image_dir, inf_img_dir, inf_ann_dir, model, visualizer, class
     print('Done.')
 
 # Call the function
-save_inference(image_dir, inf_img_dir, inf_ann_dir, model, visualizer, class_mapping, save_images, standardize_points, img_height, img_width, replace_class_with_label)
+save_inference(image_dir, inf_img_dir, inf_ann_dir, model, visualizer, class_mapping, standardize_points=standardize_points, img_size=img_height, save_images=save_images)

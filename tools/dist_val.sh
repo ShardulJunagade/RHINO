@@ -2,26 +2,33 @@
 
 CONFIG=$1
 CHECKPOINT=$2
-GPUS=${GPUS:-1}
+GPUS=$3
 NNODES=${NNODES:-1}
 NODE_RANK=${NODE_RANK:-0}
-PORT=${PORT:-29501}
+PORT=${PORT:-29503}
 MASTER_ADDR=${MASTER_ADDR:-"127.0.0.1"}
 
-# Specify the GPUs to use
-export CUDA_VISIBLE_DEVICES=2,3
+# Set the CUDA_VISIBLE_DEVICES to the specified GPUs (GPUS should be a comma-separated string, e.g., "0,1,2")
+export CUDA_VISIBLE_DEVICES=$GPUS
+
+echo "Using GPUs: $CUDA_VISIBLE_DEVICES"
+
+# Ensure GPUS is passed as an integer to nproc_per_node
+NUM_GPUS=$(echo $GPUS | tr ',' '\n' | wc -l)
 
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
 python3 -m torch.distributed.run \
     --nnodes=$NNODES \
     --node_rank=$NODE_RANK \
     --master_addr=$MASTER_ADDR \
-    --nproc_per_node=$GPUS \
+    --nproc_per_node=$NUM_GPUS \
     --master_port=$PORT \
     $(dirname "$0")/val.py \
     $CONFIG \
     $CHECKPOINT \
-    --launcher pytorch ${@:3}
+    --launcher pytorch ${@:4}
 
 
-# bash tools/dist_val.sh 'configs/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns.py' 'work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns1/epoch_36.pth'
+# bash tools/dist_val.sh configs/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns.py \
+#     work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns1/epoch_36.pth \
+#     2,3
