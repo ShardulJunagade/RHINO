@@ -1,4 +1,4 @@
-_base_ = ['../_base_/datasets/swinir.py', '../_base_/default_runtime.py']
+_base_ = ['../_base_/datasets/haryana.py', '../_base_/default_runtime.py']
 angle_cfg = dict(
     width_longer=True,
     start_angle=0,
@@ -104,7 +104,7 @@ model = dict(
     test_cfg=dict(max_per_img=500))  # 100 for DeformDETR
 
 train_dataloader = dict(
-    batch_size=4, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
+    batch_size=3, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
 
 # optimizer
 optim_wrapper = dict(

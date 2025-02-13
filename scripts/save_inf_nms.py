@@ -91,11 +91,11 @@ def save_inference(image_dir, model, inf_dir, visualizer, class_mapping, confide
 
 
 # Configuration and checkpoint files
-config_file = 'configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns.py'
+config_file = 'configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_haryana.py'
 
-checkpoint_file = 'work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_bihar/epoch_36.pth'
-image_dir = 'data/bihar/val/images'
-inf_dir = 'results/train_bihar_test_bihar'
+checkpoint_file = 'work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_haryana/epoch_50.pth'
+image_dir = 'data/haryana/val_bihar/images'
+inf_dir = 'results/train_haryana_test_bihar'
 save_images = False
 save_ann = True
 standardize_points = False
@@ -104,7 +104,7 @@ img_width = 640
 replace_class_with_label = False
 class_mapping = {0: "CFCBK", 1: "FCBK", 2: "Zigzag"}
 nms_iou_threshold = 0.33
-confidence_threshold = 0.25
+confidence_threshold = 0.01
 
 
 # Load the configuration file

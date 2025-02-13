@@ -1,4 +1,4 @@
-_base_ = './rhino-4scale_r50_2xb2-12e_brickkilns.py'
+_base_ = './rhino-4scale_r50_2xb2-12e_swinir_haryana_to_bihar.py'
 
 max_epochs = 50
 train_cfg = dict(

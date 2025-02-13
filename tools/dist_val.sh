@@ -31,4 +31,22 @@ python3 -m torch.distributed.run \
 
 # bash tools/dist_val.sh configs/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns.py \
 #     work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_brickkilns1/epoch_36.pth \
-#     2,3
+#     1,2
+
+
+# Train - SWINIR Bihar, Test - SWINIR Test Bihar
+# bash tools/dist_val.sh configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_swinir_bihar_to_bihar.py \
+#     work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_swinir_bihar_to_bihar/epoch_50.pth \
+#     1,2
+
+
+# Train - SWINIR Haryana, Test - SWINIR Test Bihar
+# bash tools/dist_val.sh configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_swinir_haryana_to_bihar.py \
+#     work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_swinir_haryana_to_bihar/epoch_50.pth \
+#     1,2
+
+
+# Train - Haryana, Test - Test Bihar
+# bash tools/dist_val.sh configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-36e_haryana.py \
+#     work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_haryana/epoch_50.pth \
+#     1,2
