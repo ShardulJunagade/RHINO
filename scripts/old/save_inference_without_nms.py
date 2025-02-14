@@ -1,3 +1,6 @@
+# Description: This script saves the inference results in the DOTA format WITHOUT applying NMS.
+
+
 import os
 import cv2
 import mmcv
