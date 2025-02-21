@@ -1,4 +1,4 @@
-_base_ = './rhino-4scale_r50_2xb2-1brickkilns.py'
+_base_ = './rhino-4scale_r50_2xb2-12e_brickkilns.py'
 pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth'  # noqa
 max_epochs = 36
 train_cfg = dict(

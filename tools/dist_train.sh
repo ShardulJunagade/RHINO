@@ -16,7 +16,7 @@ echo "Using GPUs: $CUDA_VISIBLE_DEVICES"
 NUM_GPUS=$(echo $GPUS | tr ',' '\n' | wc -l)
 
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
-python3 -m torch.distributed.run \
+nohup python3 -m torch.distributed.run \
     --nnodes=$NNODES \
     --node_rank=$NODE_RANK \
     --master_addr=$MASTER_ADDR \
@@ -24,4 +24,9 @@ python3 -m torch.distributed.run \
     --master_port=$PORT \
     $(dirname "$0")/train.py \
     $CONFIG \
-    --launcher pytorch ${@:3}
+    --launcher pytorch ${@:3} > my_output.log 2>&1 &
+
+
+# bash tools/dist_train.sh 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py' 2,3
+
+# bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_bihar.py' 2,3

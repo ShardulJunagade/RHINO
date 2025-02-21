@@ -107,5 +107,16 @@ model_configs = [
         'inf_dir': 'results/train_swinir_haryana_test_bihar_epoch_30',
         'img_height': 2560,
         'epoch': 30,
+    },
+    {
+        # Combined Data to Train m0
+        'train': 'Combined Data',
+        'test': 'Train m0',
+        'config_file': 'configs-mine/rhino/rhino_phc_haus-4scale_r50_2xb2-50e_combined.py',
+        'checkpoint_file': '',
+        'val_dir': 'data/m0/train',
+        'inf_dir': '',
+        'img_height': 640,
+        'epoch': 50,
     }
 ]

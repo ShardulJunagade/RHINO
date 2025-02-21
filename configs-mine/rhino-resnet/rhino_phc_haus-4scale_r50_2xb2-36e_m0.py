@@ -1,6 +1,6 @@
 _base_ = './rhino-4scale_r50_2xb2-12e_m0.py'
 
-max_epochs = 36
+max_epochs = 50
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=12)
 param_scheduler = [
