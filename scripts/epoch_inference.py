@@ -1,5 +1,3 @@
-# Description: This script is used to perform inference on the validation set and save the results in the DOTA format or Supervision format after applying NMS.
-
 import os
 import cv2
 import mmcv
@@ -11,12 +9,13 @@ from mmdet.apis import inference_detector, init_detector
 from mmrotate.visualization import RotLocalVisualizer
 from mmcv.ops import nms_rotated
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
 def apply_rotated_nms(bboxes, scores, labels, nms_iou_threshold=0.1):
     """Applies Rotated Non-Maximum Suppression (R-NMS) to filter overlapping detections."""
+    print(f'Applying rotated NMS with {len(bboxes)} bboxes')
     if len(bboxes) == 0:
+        print('No bounding boxes to apply NMS on.')
         return [], [], []
 
     # Convert numpy arrays to tensors
@@ -26,13 +25,14 @@ def apply_rotated_nms(bboxes, scores, labels, nms_iou_threshold=0.1):
 
     # Apply rotated NMS
     _, keep_indices = nms_rotated(bboxes, scores, nms_iou_threshold)
-    # print(keep_indices)
+    print(f'Keep indices after NMS: {keep_indices}')
 
     # Convert tensors back to numpy
     bboxes = bboxes[keep_indices].numpy()
     scores = scores[keep_indices].numpy()
     labels = labels[keep_indices].numpy()
 
+    print(f'Kept {len(bboxes)} detections after NMS.')
     return bboxes, scores, labels
 
 
@@ -41,6 +41,7 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
     image_files = os.listdir(image_dir)
     image_files = sorted(image_files)
     num_images = len(image_files)
+    print(f'Found {num_images} images in {image_dir}')
 
     visualizer = RotLocalVisualizer()
 
@@ -53,13 +54,18 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
         scores = result.pred_instances.scores.cpu().numpy()
         labels = result.pred_instances.labels.cpu().numpy()
 
+        print(f'Initial detections: {len(bboxes)} bboxes, {len(scores)} scores, {len(labels)} labels')
+
         # Filter detections based on confidence threshold
         mask = scores >= confidence_threshold
         bboxes, scores, labels = bboxes[mask], scores[mask], labels[mask]
+        print(f'Detections after confidence threshold: {len(bboxes)} bboxes, {len(scores)} scores, {len(labels)} labels')
 
         if apply_nms:
+            print(f'Applying NMS with IOU threshold of {nms_iou_threshold}')
             bboxes, scores, labels = apply_rotated_nms(bboxes, scores, labels, nms_iou_threshold=nms_iou_threshold)
-        
+            print(f'Detections after NMS: {len(bboxes)} bboxes, {len(scores)} scores, {len(labels)} labels')
+
         # Save the visualized test images with detections
         if save_images:
             inf_img_dir = os.path.join(inf_dir, 'images')
@@ -72,12 +78,14 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
                 draw_gt=False,
                 out_file=os.path.join(inf_img_dir, image_name)
             )
+            print(f'Saved visualized image: {os.path.join(inf_img_dir, image_name)}')
 
         # Save annotations in DOTA format
         if save_ann:
             inf_ann_dir = os.path.join(inf_dir, 'annfiles')
             os.makedirs(inf_ann_dir, exist_ok=True)
             ann_file = os.path.join(inf_ann_dir, f'{os.path.splitext(image_name)[0]}.txt')
+            print(f'Saving annotation file: {ann_file}')
             with open(ann_file, 'w') as f:
                 for bbox, score, label in zip(bboxes, scores, labels):
                     # Convert (cx, cy, w, h, angle) to DOTA format
@@ -87,6 +95,7 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
 
                     if standardize_points:
                         points = points / img_size
+                        print(f'Standardized points: {points}')
 
                     if replace_class_with_label:
                         label = class_mapping.get(label, 'Unknown')
@@ -97,77 +106,23 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
                         f.write(f"{' '.join(map(str, points))} {label} {score}\n")
                     elif save_ann_format == 'supervision':
                         f.write(f"{label} {' '.join(map(str, points))} {score}\n")
+            print(f'Saved annotation file: {ann_file}')
 
     print('Done.')
 
 
 # Configuration files
 model_configs = [
-    {
-        # Combined Data to 5 state bihar
-        'train': 'Combined Data',
-        'test': 'Bihar',
-        'backbone': 'resnet50',
-        'head': 'rhino',
+    {   # Bihar to Bihar
+        'train': 'Combined Dataset',
+        'test': 'm0 Validation',
         'config_file': 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py',
-        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined/best_model_on_m0.pth',
-        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/5states/bihar',
-        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-resnet50/train_combined_test_5states/bihar',
+        'checkpoint_file': 'work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined',
+        'val_dir': 'data/m0/val',
+        'inf_dir': 'results-resnet50/train_combined_test_m0',
         'img_height': 640,
-        'epoch': 21,
-    },
-    {
-        # Combined Data to 5 state haryana
-        'train': 'Combined Data',
-        'test': 'Haryana',
-        'backbone': 'resnet50',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py',
-        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined/best_model_on_m0.pth',
-        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/5states/haryana',
-        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-resnet50/train_combined_test_5states/haryana',
-        'img_height': 640,
-        'epoch': 21,
-    },
-    {
-        # Combined Data to 5 state punjab
-        'train': 'Combined Data',
-        'test': 'Punjab',
-        'backbone': 'resnet50',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py',
-        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined/best_model_on_m0.pth',
-        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/5states/punjab',
-        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-resnet50/train_combined_test_5states/punjab',
-        'img_height': 640,
-        'epoch': 21,
-    },
-    {
-        # Combined Data to 5 state uttar pradesh
-        'train': 'Combined Data',
-        'test': 'Uttar Pradesh',
-        'backbone': 'resnet50',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py',
-        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined/best_model_on_m0.pth',
-        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/5states/uttar_pradesh',
-        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-resnet50/train_combined_test_5states/uttar_pradesh',
-        'img_height': 640,
-        'epoch': 21,
-    },
-    {
-        # Combined Data to 5 state west bengal
-        'train': 'Combined Data',
-        'test': 'West Bengal',
-        'backbone': 'resnet50',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-resnet/rhino_phc_haus-4scale_r50_2xb2-36e_combined.py',
-        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_r50_2xb2-36e_combined/best_model_on_m0.pth',
-        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/5states/west_bengal',
-        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-resnet50/train_combined_test_5states/west_bengal',
-        'img_height': 640,
-        'epoch': 21,
-    },
+        'epoch': 75,
+    }
 ]
 
 
@@ -182,10 +137,14 @@ nms_iou_threshold = 0.33
 confidence_threshold = 0.01
 
 for model_config in model_configs:
-    # Load the configuration file
-    cfg = Config.fromfile(model_config['config_file'])
-    init_default_scope(cfg.get('default_scope', 'mmrotate'))
-    # Initialize the model
-    model = init_detector(cfg, model_config['checkpoint_file'], device=device)
-    # Call the function
-    save_inference(model_config['val_dir'] + '/images', model, model_config['inf_dir'], class_mapping, confidence_threshold, apply_nms, nms_iou_threshold, standardize_points, model_config['img_height'], save_images, save_ann, save_ann_format)
+    num_epochs = model_config['epoch']
+    for i in range(1, num_epochs + 1):
+        # Load the configuration file
+        cfg = Config.fromfile(model_config['config_file'])
+        init_default_scope(cfg.get('default_scope', 'mmrotate'))
+        # Initialize the model
+        print(f'Epoch {i}/{num_epochs}')
+        model_path = os.path.join(model_config['checkpoint_file'], f'epoch_{i}.pth')
+        print(f'Loading model from {model_path}')
+        model = init_detector(cfg, model_path, device='cuda:0')
+        save_inference(model_config['val_dir'] + '/images', model, model_config['inf_dir'] + f'/epoch_{i}', class_mapping, confidence_threshold, apply_nms, nms_iou_threshold, standardize_points, model_config['img_height'], save_images, save_ann, save_ann_format)
