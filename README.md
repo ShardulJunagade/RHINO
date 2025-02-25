@@ -1,3 +1,14 @@
+# Brick Kiln Detection in Satellite Images using RHINO
+
+This repository is a fork of **RHINO: Hausdorff Distance Matching with Adaptive Query Denoising for Rotated Detection Transformer**. The original RHINO model is a robust DETR-based architecture designed for detecting rotated objects in aerial and satellite imagery. 
+
+In this project, we adapt RHINO to detect **brick kilns** in satellite images. Brick kilns are significant sources of air pollution, and their detection can help in environmental monitoring and policy enforcement. By leveraging RHINO’s strong performance in oriented object detection, we aim to develop an accurate and efficient method for automatically identifying brick kilns in large-scale satellite imagery datasets.
+
+Below is the original documentation of RHINO, which outlines its capabilities, setup instructions, and evaluation details.
+
+---
+
+
 # Hausdorff Distance Matching with Adaptive Query Denoising for Rotated Detection Transformer
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rhino-rotated-detr-with-dynamic-denoising-via/oriented-object-detection-on-dota-2-0)](https://paperswithcode.com/sota/oriented-object-detection-on-dota-2-0?p=rhino-rotated-detr-with-dynamic-denoising-via)
 
