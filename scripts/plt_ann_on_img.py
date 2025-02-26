@@ -3,6 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from PIL import Image
+
 METAINFO = {
 	'classes': ('CFCBK', 'FCBK', 'Zigzag'),
 	'palette': [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
@@ -56,11 +58,15 @@ def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized,
 	for i, image_name in enumerate(image_files[:10]):
 		print(f'Processing image {i + 1}/{num_images}...')
 		image_path = os.path.join(image_dir, image_name)
-		ann_file = os.path.join(ann_dir, f'{os.path.splitext(image_name)[0]}.txt')
-		image = cv2.imread(image_path)
+		if image_name.lower().endswith('.tif') or image_name.lower().endswith('.tiff'):
+			image = np.array(Image.open(image_path).convert('RGB'))  # Ensure 3-channel RGB
+			image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # Convert to BGR for OpenCV
+		else:
+			image = cv2.imread(image_path)
 		if image is None:
 			print(f"Image {image_path} not found.")
 			continue
+		ann_file = os.path.join(ann_dir, f'{os.path.splitext(image_name)[0]}.txt')
 		annotated_img = draw_annotations(image, ann_file, img_size, is_ann_normalized, ann_format, is_label_number)
 		if save:
 			out_path = os.path.join(out_dir, image_name)
@@ -74,9 +80,9 @@ def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized,
 			plt.show()
 
 
-image_dir='data/5states/bihar/images'
-ann_dir='results-resnet50/train_combined_test_5states/bihar/annfiles'
-out_dir='results-resnet50/train_combined_test_5states/bihar/annotated_images'
+image_dir = '/home/patel_zeel/kiln_compass_24/data/bihar/images'
+ann_dir = 'results-resnet50/train_combined_test_5states/bihar/annfiles'
+out_dir = 'results-resnet50/train_combined_test_5states/bihar/annotated_images'
 img_size = 640
 is_ann_normalized = True
 ann_format = 'supervision'
