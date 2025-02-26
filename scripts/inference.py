@@ -70,6 +70,7 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
                 result,
                 show=False,
                 draw_gt=False,
+                draw_pred=True,
                 out_file=os.path.join(inf_img_dir, image_name)
             )
 

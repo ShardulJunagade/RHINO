@@ -10,8 +10,9 @@ METAINFO = {
 
 add_score = False
 
-def draw_annotations(image, ann_file):
-	"""Draws rotated bounding boxes from a DOTA annotation file using specified colors."""
+
+def draw_annotations(image, ann_file, img_size, is_ann_normalized, ann_format='dota', is_label_number=False):
+	"""Draws rotated bounding boxes from a DOTA or Supervision annotation file using specified colors."""
 	img = image.copy()
 	if not os.path.exists(ann_file):
 		print(f"Annotation file {ann_file} not found.")
@@ -21,12 +22,23 @@ def draw_annotations(image, ann_file):
 		lines = f.readlines()
 	for line in lines:
 		values = line.strip().split()
-		if len(values) < 9:
+		if len(values) < 10:
+			print(f"Invalid annotation line: {line} in {ann_file}")
 			continue
-		points = np.array(list(map(float, values[:8]))).reshape((4, 2)).astype(int)
-		label = values[8]
-		score = values[9]
-		color = class_to_color.get(label, (255, 255, 255))		
+		if ann_format == 'dota':
+			points = np.array(list(map(float, values[:8]))).reshape((4, 2))
+			label = values[8]
+			score = values[9]
+		elif ann_format == 'supervision':
+			label = values[0]
+			points = np.array(list(map(float, values[1:9]))).reshape((4, 2))
+			score = values[9]
+		if is_label_number:
+			label = METAINFO['classes'][int(label)]
+		if is_ann_normalized:
+			points *= img_size
+		points = points.astype(int)
+		color = class_to_color.get(label, (255, 255, 255))
 		if add_score:
 			label = label + ':' +  score
 		thickness = 1
@@ -35,14 +47,13 @@ def draw_annotations(image, ann_file):
 	return img
 
 
-def annotate_directory(image_dir, ann_dir, out_dir, save=True, plot=False):
-	"""Draws rotated bounding boxes from DOTA annotation files on images in a directory."""
+def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized, ann_format='dota', is_label_number=False, save=True, plot=False): 
+	"""Draws rotated bounding boxes from DOTA or Supervision annotation files on images in a directory."""
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir, exist_ok=True)
-	image_files = os.listdir(image_dir)
-	image_files = sorted(image_files)
+	image_files = sorted(os.listdir(image_dir))
 	num_images = len(image_files)
-	for i, image_name in enumerate(image_files):
+	for i, image_name in enumerate(image_files[:10]):
 		print(f'Processing image {i + 1}/{num_images}...')
 		image_path = os.path.join(image_dir, image_name)
 		ann_file = os.path.join(ann_dir, f'{os.path.splitext(image_name)[0]}.txt')
@@ -50,7 +61,7 @@ def annotate_directory(image_dir, ann_dir, out_dir, save=True, plot=False):
 		if image is None:
 			print(f"Image {image_path} not found.")
 			continue
-		annotated_img = draw_annotations(image, ann_file)
+		annotated_img = draw_annotations(image, ann_file, img_size, is_ann_normalized, ann_format, is_label_number)
 		if save:
 			out_path = os.path.join(out_dir, image_name)
 			success = cv2.imwrite(out_path, annotated_img)
@@ -63,7 +74,12 @@ def annotate_directory(image_dir, ann_dir, out_dir, save=True, plot=False):
 			plt.show()
 
 
-image_dir='data/m0/val/images'
-ann_dir='results/m0/val/annfiles'
-out_dir='results/m0/val/annotated'
-annotate_directory(image_dir, ann_dir, out_dir, save=True, plot=False)
+image_dir='data/5states/bihar/images'
+ann_dir='results-resnet50/train_combined_test_5states/bihar/annfiles'
+out_dir='results-resnet50/train_combined_test_5states/bihar/annotated_images'
+img_size = 640
+is_ann_normalized = True
+ann_format = 'supervision'
+is_label_number = True
+
+annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized, ann_format, is_label_number, save=True, plot=True)
