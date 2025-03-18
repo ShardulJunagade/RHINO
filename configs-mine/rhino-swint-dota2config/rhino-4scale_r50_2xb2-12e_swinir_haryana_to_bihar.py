@@ -104,7 +104,7 @@ model = dict(
     test_cfg=dict(max_per_img=500))  # 100 for DeformDETR
 
 train_dataloader = dict(
-    batch_size=3, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
+    batch_size=2, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
 
 # optimizer
 optim_wrapper = dict(

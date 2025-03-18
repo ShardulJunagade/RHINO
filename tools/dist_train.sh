@@ -32,3 +32,9 @@ nohup python3 -m torch.distributed.run \
 # bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_bihar.py' 2,3
 
 # bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_m0.py' 2,3
+
+# bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_haryana.py' 2
+
+# bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_bihar.py' 1,2
+
+# bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_haryana.py' 1,2
