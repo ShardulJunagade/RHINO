@@ -16,9 +16,6 @@ add_score = False
 def draw_annotations(image, ann_file, img_size, is_ann_normalized, ann_format='dota', is_label_number=False):
 	"""Draws rotated bounding boxes from a DOTA or Supervision annotation file using specified colors."""
 	img = image.copy()
-	if not os.path.exists(ann_file):
-		print(f"Annotation file {ann_file} not found.")
-		return img
 	class_to_color = dict(zip(METAINFO['classes'], METAINFO['palette']))
 	with open(ann_file, 'r') as f:
 		lines = f.readlines()
@@ -55,8 +52,9 @@ def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized,
 		os.makedirs(out_dir, exist_ok=True)
 	image_files = sorted(os.listdir(image_dir))
 	num_images = len(image_files)
-	for i, image_name in enumerate(image_files[:10]):
+	for i, image_name in enumerate(image_files):
 		print(f'Processing image {i + 1}/{num_images}...')
+		# print(f'Image name: {image_name}')
 		image_path = os.path.join(image_dir, image_name)
 		if image_name.lower().endswith('.tif') or image_name.lower().endswith('.tiff'):
 			image = np.array(Image.open(image_path).convert('RGB'))  # Ensure 3-channel RGB
@@ -67,6 +65,10 @@ def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized,
 			print(f"Image {image_path} not found.")
 			continue
 		ann_file = os.path.join(ann_dir, f'{os.path.splitext(image_name)[0]}.txt')
+		if not os.path.exists(ann_file):
+			print(f"Annotation file {ann_file} not found for image {image_name}.")
+			continue
+
 		annotated_img = draw_annotations(image, ann_file, img_size, is_ann_normalized, ann_format, is_label_number)
 		if save:
 			out_path = os.path.join(out_dir, image_name)
@@ -79,13 +81,47 @@ def annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized,
 			plt.axis('off')
 			plt.show()
 
+	print(f"Number of annotated images: {len(os.listdir(out_dir))}")
+	print(f"Number of images in the directory: {len(image_files)}")
 
-image_dir = '/home/patel_zeel/kiln_compass_24/data/bihar/images'
-ann_dir = 'results-resnet50/train_combined_test_5states/bihar/annfiles'
-out_dir = 'results-resnet50/train_combined_test_5states/bihar/annotated_images'
+# delhi ncr labels on delhi ncr images
+# image_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_CG_bks/images'
+# ann_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_ncr_small/annfiles'
+# out_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_ncr_small/annotated_images'
+
+# delhi ncr labels on delhi cg images
+# image_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_CG_bks/images'
+# ann_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_CG_bks/delhi_to_gen_delhi_bks/annfiles'
+# out_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/delhi_CG_bks/delhi_to_gen_delhi_bks/annotated_images'
+
+# wb labels on wb images
+# image_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed/images'
+# ann_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed/annfiles'
+# out_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed/annotated_images'
+
+
+# delhi_ncr_to_wb labels on wb images
+image_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed/images'
+ann_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/delhi_to_wb/annfiles'
+out_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/delhi_to_wb/annotated_images'
+
+
+# gen_delhi_to_wb labels on wb images
+# image_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed/images'
+# ann_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/gen_delhi_to_wb/annfiles'
+# out_dir = '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/gen_delhi_to_wb/annotated_images'
+
+
+
 img_size = 640
 is_ann_normalized = True
 ann_format = 'supervision'
 is_label_number = True
 
-annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized, ann_format, is_label_number, save=True, plot=True)
+
+# img_size = 640
+# is_ann_normalized = False
+# ann_format = 'dota'
+# is_label_number = False
+
+annotate_directory(image_dir, ann_dir, out_dir, img_size, is_ann_normalized, ann_format, is_label_number, save=True, plot=False)

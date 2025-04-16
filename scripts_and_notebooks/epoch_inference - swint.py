@@ -72,7 +72,7 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
             os.makedirs(inf_img_dir, exist_ok=True)
             visualizer.add_datasample(
                 image_name,
-                mmcv.imread(image_path),
+                mmcv.imconvert(mmcv.imread(image_path), 'bgr', 'rgb'),
                 result,
                 show=False,
                 draw_gt=False,
@@ -113,70 +113,44 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
 
 # Configuration files
 model_configs = [
-    {   # Bihar to Bihar
-        'train': 'Train Bihar',
-        'test': 'Test Bihar',
+    # {   # Bihar to Bihar
+    #     'train': 'Train Bihar',
+    #     'test': 'Test Bihar',
+    #     'backbone': 'swint',
+    #     'head': 'rhino',
+    #     'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_bihar.py',
+    #     'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_bihar',
+    #     'val_dir': 'data/bihar/val',
+    #     'inf_dir': 'results-swint/train_bihar_test_bihar',
+    #     'img_height': 640,
+    #     'epoch': 50,
+    # },
+    #     {
+    #     'train': 'Delhi NCR',
+    #     'test': 'West Bengal',
+    #     'backbone': 'swint',
+    #     'head': 'rhino',
+    #     'config_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_delhi_ncr.py',
+    #     'checkpoint_folder': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_delhi_ncr',
+    #     'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_delhi_ncr/epoch_50.pth',
+    #     'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed',
+    #     'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/delhi_to_wb',
+    #     'img_height': 640,
+    #     'epoch': 50,
+    # },
+    {
+        'train': 'Gen Delhi NCR (CG)',
+        'test': 'West Bengal',
         'backbone': 'swint',
         'head': 'rhino',
-        'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_bihar.py',
-        'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_bihar',
-        'val_dir': 'data/bihar/val',
-        'inf_dir': 'results-swint/train_bihar_test_bihar',
+        'config_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_gen_delhi_CG_bks.py',
+        'checkpoint_folder': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_gen_delhi_CG_bks',
+        'checkpoint_file': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_gen_delhi_CG_bks/epoch_50.pth',
+        'val_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/data/grid_data/wb_small_airshed',
+        'inf_dir': '/home/shardul.junagade/my-work/domain-adaptation-brick-kilns/RHINO/results-swint/gen_delhi_to_wb',
         'img_height': 640,
         'epoch': 50,
-    },
-    {
-        # Haryana to Bihar
-        'train': 'Train Haryana',
-        'test': 'Test Bihar',
-        'backbone': 'swint',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_haryana.py',
-        'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_haryana',
-        'val_dir': 'data/haryana/val_bihar',
-        'inf_dir': 'results-swint/train_haryana_test_bihar',
-        'img_height': 640,
-        'epoch': 50,
-    },
-    {
-        # m0 to m0
-        'train': 'Train m0',
-        'test': 'Test m0',
-        'backbone': 'swint',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_m0.py',
-        'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_m0',
-        'val_dir': 'data/m0/val',
-        'inf_dir': 'results-swint/train_m0_test_m0',
-        'img_height': 640,
-        'epoch': 50,
-    },
-    {
-        # SwinIR Bihar to Bihar
-        'train': 'Train SwinIR Bihar',
-        'test': 'Test SwinIR Bihar',
-        'backbone': 'swint',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_bihar.py',
-        'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_bihar',
-        'val_dir': 'data/swinir/test_bihar_same_class_count_10_120_1000_4x',
-        'inf_dir': 'results-swint/train_swinir_bihar_test_bihar',
-        'img_height': 2560,
-        'epoch': 50,
-    },
-    {
-        # SwinIR Haryana to Bihar
-        'train': 'Train SwinIR Haryana',
-        'test': 'Test SwinIR Bihar',
-        'backbone': 'swint',
-        'head': 'rhino',
-        'config_file': 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_haryana.py',
-        'checkpoint_folder': 'work_dirs/rhino_phc_haus-4scale_swint_2xb2-36e_swinir_haryana',
-        'val_dir': 'data/swinir/test_bihar_same_class_count_10_120_1000_4x',
-        'inf_dir': 'results-swint/train_swinir_haryana_test_bihar',
-        'img_height': 2560,
-        'epoch': 50,
-    },
+    }
 ]
 
 

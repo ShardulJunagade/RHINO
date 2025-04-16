@@ -72,7 +72,7 @@ def save_inference(image_dir, model, inf_dir, class_mapping, confidence_threshol
             os.makedirs(inf_img_dir, exist_ok=True)
             visualizer.add_datasample(
                 image_name,
-                mmcv.imread(image_path),
+                mmcv.imconvert(mmcv.imread(image_path), 'bgr', 'rgb'),
                 result,
                 show=False,
                 draw_gt=False,
