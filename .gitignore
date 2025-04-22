@@ -4,7 +4,7 @@ annfiles/
 labels/
 .dist_test/
 annotated_images/
-data 1200_100_10/
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
