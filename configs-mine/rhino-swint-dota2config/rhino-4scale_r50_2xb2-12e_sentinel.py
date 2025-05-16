@@ -1,4 +1,4 @@
-_base_ = ['../_base_/datasets/haryana.py', '../_base_/default_runtime.py']
+_base_ = ['../_base_/datasets/sentinel.py', '../_base_/default_runtime.py']
 angle_cfg = dict(
     width_longer=True,
     start_angle=0,
@@ -7,7 +7,7 @@ angle_cfg = dict(
 model = dict(
     type='RHINO',
     version='v2',
-    num_queries=900,  # num_matching_queries
+    num_queries=100,  # num_matching_queries
     with_box_refine=True,
     as_two_stage=True,
     data_preprocessor=dict(
@@ -104,8 +104,7 @@ model = dict(
     test_cfg=dict(max_per_img=500))  # 100 for DeformDETR
 
 train_dataloader = dict(
-    batch_size=25, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
-
+    batch_size=64*2, dataset=dict(filter_cfg=dict(filter_empty_gt=False)))
 # optimizer
 optim_wrapper = dict(
     type='OptimWrapper',

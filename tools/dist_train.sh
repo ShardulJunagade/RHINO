@@ -4,7 +4,7 @@ CONFIG=$1
 GPUS=$2
 NNODES=${NNODES:-1}
 NODE_RANK=${NODE_RANK:-0}
-PORT=${PORT:-29500}
+PORT=${PORT:-29510}
 MASTER_ADDR=${MASTER_ADDR:-"127.0.0.1"}
 
 # Set the CUDA_VISIBLE_DEVICES to the specified GPUs (GPUS should be a comma-separated string, e.g. "0,2,3")
@@ -44,3 +44,5 @@ nohup python3 -m torch.distributed.run \
 # bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_thera_bihar.py' 1,2,3
 
 # bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_thera_haryana.py' 2,3
+
+# bash tools/dist_train.sh 'configs-mine/rhino-swint-dota2config/rhino_phc_haus-4scale_swint_2xb2-36e_sentinel.py' 0
